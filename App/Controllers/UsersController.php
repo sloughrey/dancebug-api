@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Controllers;
 
 use App\User;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Repositories\UserRepository;
+use App\UserRepository;
+use App\ResourceControllerInterface;
 
-class UserController extends Controller
+class UsersController implements ResourceControllerInterface
 {
     /**
      * Stores an instance of the UserRepository used to communicate with the db.
@@ -58,16 +57,16 @@ class UserController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function create(Request $request)
+    public function create()
     {
         // validate our user data
         $user = new User();
-        $user->set('studioName', $request->input('studioName'));
-        $user->set('studioID', (int) $request->input('studioID'));
-        $user->set('firstName', $request->input('firstName'));
-        $user->set('lastName', $request->input('lastName'));
-        $user->set('gender', $request->input('gender'));
-        $user->set('dob', $request->input('dob'));
+        $user->set('studioName', $_POST['studioName']);
+        $user->set('studioID', (int) $_POST['studioID']);
+        $user->set('firstName', $_POST['firstName']);
+        $user->set('lastName', $_POST['lastName']);
+        $user->set('gender', $_POST['gender']);
+        $user->set('dob', $_POST['dob']);
 
         if ($user->hasErrors()) {
             return $this->redirectError(422, $user->getErrors());
@@ -92,15 +91,12 @@ class UserController extends Controller
      */
     public function sendSuccess($data = [], $statusCode = 200, $statusMsg = '')
     {
-        return response()->json(
-            [
+        return [
             'status' => 'success',
             'statusMsg' => $statusMsg,
-            'data' => $data,
-            'errors' => []
-            ],
-            $statusCode
-        );
+            'errors' => [],
+            'data' => $data
+        ];
     }
 
     /**
@@ -114,11 +110,11 @@ class UserController extends Controller
     public function redirectError($statusCode, $errors = [], $statusMsg = '')
     {
         // return 422 status code for bad data
-        return response()->json([
+        return [
             'status' => 'error',
             'statusMsg' => $statusMsg,
             'errors' => $errors,
             'data' => []
-        ], 422);
+        ];
     }
 }

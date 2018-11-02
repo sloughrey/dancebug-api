@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Controllers;
 
 use App\User;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Repositories\UserRepository;
+use App\UserRepository;
 
-class HomeController extends Controller
+class HomeController
 {
     public function index(Request $request)
     {
