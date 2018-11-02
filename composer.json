@@ -1,0 +1,12 @@
+{
+    "name": "sloughrey/dancebug-api",
+    "description": "mini rest api",
+    "authors": [
+        {
+            "name": "Sean Loughrey",
+            "email": "s.a.loughrey@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
