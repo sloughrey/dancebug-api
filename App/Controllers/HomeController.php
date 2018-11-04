@@ -7,7 +7,7 @@ use App\UserRepository;
 
 class HomeController
 {
-    public function index(Request $request)
+    public function index()
     {
         $repo = new UserRepository();
         $users = $repo->all();

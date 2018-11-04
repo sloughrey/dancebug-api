@@ -3,6 +3,12 @@
 // import composer autoload
 require __DIR__ . '../../vendor/autoload.php';
 $requestUri = $_SERVER['REQUEST_URI'];
+
+if ($requestUri == '/') {
+    $controller = new App\Controllers\HomeController();
+    $viewData = $controller->index();
+}
+
 $urlChunks = explode('/', $requestUri);
 
 foreach($urlChunks as $k => $chunk)
@@ -37,31 +43,37 @@ if(!empty($urlChunks)) {
 
 try {
     $controller = new $controllerName();
-    switch(strtoupper($_SERVER['REQUEST_METHOD']))
-    {
-        case 'GET':
-            if ($resourceId) {
-                $method = 'show';
-            }
-            else { 
-                $method = 'all';
-            }
-            break;
-        case 'POST':
-            // create user
-            $method = 'create';
-            break;
-        case 'PUT':
-            // update the user
-            $method = 'update';
-            break;
-        case 'DELETE':
-            // delete a user
-            $method = 'delete';
-            break;
-        default:
-            throw new Exception('HTTP method not accounted for');
+
+    if ($controller instanceof App\ResourceControllerInterface) {
+        switch(strtoupper($_SERVER['REQUEST_METHOD']))
+        {
+            case 'GET':
+                if ($resourceId) {
+                    $method = 'show';
+                }
+                else { 
+                    $method = 'all';
+                }
+                break;
+            case 'POST':
+                // create user
+                $method = 'create';
+                break;
+            case 'PUT':
+                // update the user
+                $method = 'update';
+                break;
+            case 'DELETE':
+                // delete a user
+                $method = 'delete';
+                break;
+            default:
+                throw new Exception('HTTP method not accounted for');
+        }
+    } else {
+        throw new Exception('Any controller used must implement the ResourceControllerInterface');
     }
+    
 
     if ($method == 'show') {
         if (!is_numeric($resourceId)) {
