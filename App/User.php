@@ -246,6 +246,7 @@ class User
     public function toArray()
     {
         return [
+            'dancerID' => $this->dancerID,
             'studioName' => $this->studioName,
             'studioID' => $this->studioID,
             'firstName' => $this->firstName,
@@ -328,12 +329,13 @@ class User
             // set the last insert id
             $this->dancerID = $mysqli->insert_id;
         } else {
-            $sql = 'UPDATE ' . $this->coreTable . ' SET StudioName = ?, StudioID = ?, FirstName = ?, LastName = ?, Gender = ?, DOB = ?';
+            $sql = 'UPDATE ' . $this->coreTable . ' SET StudioName = ?, StudioID = ?, FirstName = ?, LastName = ?, Gender = ?, DOB = ?
+                WHERE DancerID = ?';
             
             if (!($stmt = $mysqli->prepare($sql))) {
                 return "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
             }
-            if (!$stmt->bind_param("sissss", $this->studioName, $this->studioID, $this->firstName, $this->lastName, $this->gender, $this->dob)) {
+            if (!$stmt->bind_param("sissssi", $this->studioName, $this->studioID, $this->firstName, $this->lastName, $this->gender, $this->dob, $this->dancerID)) {
                 return "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
             }
             if (!$stmt->execute()) {

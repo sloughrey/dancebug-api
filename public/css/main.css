@@ -1,0 +1,69 @@
+#container {
+    width:50%;
+    margin: auto;
+}
+
+#site-header {
+    font-family: "Syncopate";
+    margin: auto;
+    text-align: center;
+}
+
+#site-main {
+    margin-top: 5%;
+}
+
+#site-name {
+}
+
+#site-author {
+    font-size: 14px;
+}
+
+#entity-list-container {
+    float:left;
+}
+
+#create-user {
+    float:left;
+}
+
+@media only screen and (max-width: 480px) {
+    .panel:nth-child(n+1) {
+        margin-top: 5%;
+        border-bottom: 1px solid black;
+    }
+}
+
+
+.submit-btn, #clear-user-btn{
+    float: right;
+}
+
+.entity-edit-btn {
+    float: right;
+}
+
+.entity-edit-btn:hover {
+    background-color: lightgray;
+}
+
+.section-title{
+    text-align: center;
+}
+
+.list-group-item:hover {
+    /*background-color: lightgray;*/
+}
+
+.list-group-item span {
+    vertical-align: middle;
+}
+
+footer {
+    text-align: center;
+}
+
+#clear-user-btn {
+    margin-right: 8%;
+}

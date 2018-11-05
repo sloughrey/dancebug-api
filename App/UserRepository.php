@@ -51,7 +51,7 @@ class UserRepository
         if (!$user->load()) {
             return [];
         }
-
+    
         return $user->toArray();
     }
 }

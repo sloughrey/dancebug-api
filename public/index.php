@@ -4,22 +4,19 @@
 require __DIR__ . '../../vendor/autoload.php';
 $requestUri = $_SERVER['REQUEST_URI'];
 
-if ($requestUri == '/') {
-    $controller = new App\Controllers\HomeController();
-    $viewData = $controller->index();
-}
-
 $urlChunks = explode('/', $requestUri);
 
-foreach($urlChunks as $k => $chunk)
+// clean out blank chunks
+foreach ($urlChunks as $k => $chunk)
 {
-    if(!$chunk) {
+    if (!$chunk) {
         unset($urlChunks[$k]);
     }
 }
 
+// if this is a call to the api that isn't the root (just to display the homepage)
 if (empty($urlChunks) && $requestUri != '/') {
-    throw new Exception('Must provide resource controller and / or resource id');    
+    throw new Exception('Must provide resource controller and / or resource id');
 }
 
 // grab our query string if it exists
@@ -34,24 +31,24 @@ foreach ($urlChunks as $k => $chunk) {
 
 $controllerName = '';
 $resourceId = '';
-if(!empty($urlChunks)) {
-    $controllerName = '\App\Controllers\\' . ucwords(array_shift($urlChunks)) . 'Controller';
-}
-if(!empty($urlChunks)) {
+$homeControllerName = '\App\Controllers\HomeController';
+$controllerName = (!empty($urlChunks)) ? '\App\Controllers\\'.ucwords(array_shift($urlChunks)).'Controller' : $homeControllerName;
+
+if (!empty($urlChunks)) {
     $resourceId = array_shift($urlChunks);
 }
 
 try {
     $controller = new $controllerName();
 
+    $isApiRequest = false;
     if ($controller instanceof App\ResourceControllerInterface) {
-        switch(strtoupper($_SERVER['REQUEST_METHOD']))
-        {
+        $isApiRequest = true;
+        switch (strtoupper($_SERVER['REQUEST_METHOD'])) {
             case 'GET':
                 if ($resourceId) {
                     $method = 'show';
-                }
-                else { 
+                } else {
                     $method = 'all';
                 }
                 break;
@@ -70,12 +67,13 @@ try {
             default:
                 throw new Exception('HTTP method not accounted for');
         }
+    } elseif ($controllerName == $homeControllerName) {
+        $method = 'index';
     } else {
         throw new Exception('Any controller used must implement the ResourceControllerInterface');
     }
-    
 
-    if ($method == 'show') {
+    if ($method == 'show' || $method == 'update') {
         if (!is_numeric($resourceId)) {
             throw new Exception('Must provide a valid resource id');
         }
@@ -83,9 +81,11 @@ try {
     } else {
         $viewData = $controller->$method();
     }
-    
 
-    echo json_encode($viewData);
+    if ($isApiRequest) {
+        echo json_encode($viewData);
+    }
+    
 } catch (Exception $e) {
     var_dump($e); exit;
 }

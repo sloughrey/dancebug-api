@@ -72,13 +72,51 @@ class UsersController implements ResourceControllerInterface
             return $this->redirectError(422, $user->getErrors());
         }
 
-        if (!$user->save()) {
+        if ($user->save() !== true) {
             if ($user->hasErrors()) {
                 return $this->redirectError(400, $user->getErrors());
+            } else {
+                throw new Exception('User could not be saved and had no errors set');
             }
         }
 
-        return $this->sendSuccess([], 200, 'User successfully created');
+        return $this->sendSuccess(['user' => $user->toArray()], 200, 'User successfully created');
+    }
+
+    public function update()
+    {
+        // read in our put data
+        parse_str(file_get_contents("php://input"), $_PUT);
+        foreach ($_PUT as $key => $value)
+        {
+            unset($_PUT[$key]);
+            $_PUT[str_replace('amp;', '', $key)] = $value;
+        }
+
+         // validate our user data
+         $user = new User((int) $_PUT['dancerID']);
+         $user->load();
+
+         $user->set('studioName', $_PUT['studioName']);
+         $user->set('studioID', (int) $_PUT['studioID']);
+         $user->set('firstName', $_PUT['firstName']);
+         $user->set('lastName', $_PUT['lastName']);
+         $user->set('gender', $_PUT['gender']);
+         $user->set('dob', $_PUT['dob']);
+ 
+         if ($user->hasErrors()) {
+             return $this->redirectError(422, $user->getErrors());
+         }
+ 
+         if ($user->save() !== true) {
+             if ($user->hasErrors()) {
+                 return $this->redirectError(400, $user->getErrors());
+             } else {
+                 throw new Exception('User could not be saved and had no errors set');
+             }
+         }
+ 
+         return $this->sendSuccess(['user' => $user->toArray()], 200, 'User successfully updated');
     }
 
     /**
@@ -91,6 +129,7 @@ class UsersController implements ResourceControllerInterface
      */
     public function sendSuccess($data = [], $statusCode = 200, $statusMsg = '')
     {
+        http_response_code(200);
         return [
             'status' => 'success',
             'statusMsg' => $statusMsg,
@@ -109,6 +148,7 @@ class UsersController implements ResourceControllerInterface
      */
     public function redirectError($statusCode, $errors = [], $statusMsg = '')
     {
+        http_response_code($statusCode);
         // return 422 status code for bad data
         return [
             'status' => 'error',

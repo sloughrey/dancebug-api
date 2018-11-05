@@ -11,15 +11,7 @@ class HomeController
     {
         $repo = new UserRepository();
         $users = $repo->all();
-        /*
-        $editUserID = ($request->input('id')) ? $request->input('id') : null;
-        $data = ['users' => $users, 'editUserID' => $editUserID];
-        if ($editUserID) {
-            $user = new User($editUserID);
-            $user->load();
-            $data['editUser'] = $user->toArray();
-        } */
 
-        return view('index', ['users' => $users]);
+        include(__DIR__ . ('/../Views/home.php'));
     }
 }
